@@ -1,0 +1,5 @@
+flask
+flask_api
+werkzeug==2.3.0
+Cmake
+psycopg2-binary

@@ -35,4 +35,7 @@ jobs:
         username: root
         password: u58+AzwNagu#q*
         port: 22
-        script: docker pull vgorr/pb:latest
+        script: |
+          docker pull vgorr/pb:latest
+          docker image prune -a
+          docker run -d -p 8000:8000 vgorr/pb:latest

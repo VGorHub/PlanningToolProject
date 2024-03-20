@@ -1,0 +1,38 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - 
+      name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: vgorr
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+    -
+        name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: vgorr/pb:latest
+    - name: executing remote ssh commands using password
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: 92.63.178.148
+        username: root
+        password: u58+AzwNagu#q*
+        port: 22
+        script: docker pull vgorr/pb:latest

@@ -123,5 +123,37 @@ def login():
             connection.close()
             return user, status.HTTP_200_OK
 
+@app.route("/joinEvent",methods = ['POST'])
+def joinEvent():
+    id = request.form.get('id')
+    password = request.form.get('password')
+    eventId = request.form.get('eventId')
+
+    content = {'result': 'status'}
+
+    connection = psycopg2.connect(user="postgres",
+                                  password="123qwe",
+                                  host="92.63.178.148",
+                                  port="5432",
+                                  database="hackaton")
+    # Добавить проверку на то что ивент существует вообще
+    with connection.cursor(cursor_factory=RealDictCursor) as cursor:
+        cursor.execute("SELECT * FROM users WHERE id = %s AND password = %s", (id, password,))
+        user = cursor.fetchone()
+        if (not user):
+            connection.close()
+            return content, status.HTTP_404_NOT_FOUND
+        else:
+            cursor.execute("SELECT * FROM members WHERE userId = %s AND eventId = %s", (id, eventId,))
+            if (cursor.fetchone()):
+                connection.close()
+                return content, status.HTTP_400_BAD_REQUEST
+            else:
+                cursor.execute("INSERT INTO members (userId, eventId) VALUES (%s,%s)",(id, eventId))
+                connection.commit()
+                connection.close()
+                return content, status.HTTP_200_OK
+
+
 if __name__ == '__main__':
     app.run(debug=True)
